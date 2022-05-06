@@ -5,13 +5,13 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody2D fisica;
-    public bool chute = false; //Saber se a bola pode ser chutada
-    private Vector2 vetorMovimento; // Talvez possamos remover
+    public bool chute = false;
+    private Vector2 vetorMovimento;
 
     public GameManagerScript gameManager;
-    private Transform playerClosest; // Guadar a posição do player mais próximo
+    private Transform playerClosest;
 
-    private GameObject jogadorComABola; // 
+    private GameObject jogadorComABola;
 
     // Start is called before the first frame update
     void Start()
@@ -31,9 +31,12 @@ public class Ball : MonoBehaviour
         if (playerClosest != null) // existe o player
         {
             // 1 que e uma margem para pegar o player do lado
-            if (chute && transform.position.x <= playerClosest.transform.position.x + 1)
+            if (chute)
             {
+                //myBall.transform.SetParent(null);
                 this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
+                // chuta para frente (direita)
+                //ballPhysic.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
             }
         }
 

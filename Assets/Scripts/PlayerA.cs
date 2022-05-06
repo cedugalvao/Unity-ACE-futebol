@@ -7,10 +7,12 @@ public class PlayerA : MonoBehaviour
 {
     public GameManagerScript gameManager;  //Acesso ao gamemanager e grid manager para fazer uso de métodos
     public GridManagerScript gridManager;  //E variáveis dessas classes
-    public bool withBall = false;          //Diz o player tem a bola
+    public bool withBall = false;
+    private bool chute = false;
     
     [SerializeField]
     private GameObject myBall;
+    private Rigidbody2D ballPhysic;
 
     //private float forcaChute = 1.0f;
 
@@ -20,6 +22,7 @@ public class PlayerA : MonoBehaviour
         gameManager = GameObject.FindGameObjectWithTag("gamemanager").GetComponent<GameManagerScript>();
         gridManager = GameObject.FindGameObjectWithTag("gridmanager").GetComponent<GridManagerScript>();
         myBall = GameObject.FindGameObjectWithTag("ball");
+        ballPhysic = myBall.GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -65,9 +68,9 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            // chama a função que sincroniza as listas quando o jogador pega a bola
             gameManager.AdicionarNaListaBool(gameObject, true);
             withBall = true;
+            //chute = false;
 
             // player A, como ataca pra direita, a bola vai estar mais a direita do player
             myBall.transform.position = new Vector3(this.transform.position.x + 0.6f, this.transform.position.y, this.transform.position.z);
@@ -77,7 +80,6 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            //chama a função que sincroniza as listas quando a bola sai do jogador
             gameManager.AdicionarNaListaBool(gameObject, false);
             withBall = false;
         }

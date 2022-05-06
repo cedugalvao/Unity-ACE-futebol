@@ -12,16 +12,15 @@ public class GameManagerScript : MonoBehaviour
     public bool matchon;                        // booleano que controla se a partida começou ou não
     private int turno = 0;                      // turno da partida
     private int quantFilhosJogador = 1;
-
-    private float mDistance = 99999f; //Variavel de comparação
-    private float distance = 0f; // Armazenará a distância para o player mais próximo, aprenas comparação
-    private Transform mPosition = null; // guarda a posição do player mais próximo, começa null para tratar erros
+    //NOVO
+    private float mDistance;
+    private float distance = 0f;
+    private Transform mPosition;
 
     public List<GameObject> teamA = new List<GameObject>(); // Lista com os jogadores do time A
     public List<GameObject> teamB = new List<GameObject>(); // Lista com os jogadores do time B
 
-    // Lista com ambos os jogadores, se estão ou não com a bola, sincronizado com a lista teamA
-    public List<bool> imWithBall = new List<bool>();
+    public List<bool> imWithBall = new List<bool>(); // Lista com ambos os jogadores, se estão ou não com a bola
 
     public SpriteRenderer _nrenderer;           // componente reder que será usado adiante pra modificar
                                                 // a cor das tiles
@@ -73,7 +72,7 @@ public class GameManagerScript : MonoBehaviour
 
     public bool FindBall()
     {
-        //procurando se alguém tem a bola em cena
+        //procurando se alguém tem a bola
         for (int i = 0; i < imWithBall.Count; i++)
         {
             if (imWithBall[i])
@@ -84,20 +83,23 @@ public class GameManagerScript : MonoBehaviour
         return false;
     }
 
-    //Acha a menor distancia entre o player com a bola e um jogador do time, retorna a posição dele
+    //NOVO
     public Transform MenorDistancia(Transform playerPosition)
     {
+        mPosition = null;
+        mDistance = 99999f;
+
         for (int i = 0; i < teamA.Count; i++)
         {
-            if (!imWithBall[i]) // não checo o player com a bola
+            if (!imWithBall[i])
             {
                 if (teamA[i].transform.position.x >= playerPosition.position.x) // so pode passar para frente
                 {
-                    distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position); // pega a distancia
+                    distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
 
                     if (distance < mDistance)
                     {
-                        //Debug.Log(teamA[i].transform.position);
+                        Debug.Log(teamA[i].transform.position);
                         mDistance = distance;
                         mPosition = teamA[i].transform;
                     }
@@ -105,18 +107,12 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        mDistance = 99999f; //reinicia a menor distancia
-
         return mPosition;
     }
 
-    //Sincroniza as listas Imwithball e teamA sempre que a bola é passada
-    //recebe do script PalyerA o jogador que colidiu com a bola, recebeu o passe
-    //e o valor true para adicionar à lista
-    //ou o jogador e o valor false para o jogador que tocou a bola
     public void AdicionarNaListaBool(GameObject player, bool withBall)
     {
-        for (int i = 0; i < teamA.Count; i++) // procura na lista teamA para sincronizar
+        for (int i = 0; i < teamA.Count; i++)
         {
             if (teamA[i] == player)
             {
