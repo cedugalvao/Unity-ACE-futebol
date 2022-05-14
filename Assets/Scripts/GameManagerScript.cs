@@ -11,20 +11,22 @@ public class GameManagerScript : MonoBehaviour
     
     public bool matchon;                        // booleano que controla se a partida começou ou não
     private int turno = 0;                      // turno da partida
-    private int quantFilhosJogador = 1;
-    //NOVO
+    
     private float mDistance;
     private float distance = 0f;
     private Transform mPosition;
 
-    public List<GameObject> teamA = new List<GameObject>(); // Lista com os jogadores do time A
+    public List<PlayerA> teamA = new List<PlayerA>(); // Lista com os jogadores do time A
     public List<GameObject> teamB = new List<GameObject>(); // Lista com os jogadores do time B
 
-    public List<bool> imWithBall = new List<bool>(); // Lista com ambos os jogadores, se estão ou não com a bola
+    [SerializeField]
+    public Transform GolA;
+    [SerializeField]
+    public Transform GolB;
 
     public SpriteRenderer _nrenderer;           // componente reder que será usado adiante pra modificar
                                                 // a cor das tiles
-   
+
 
     // Update is called once per frame
     void Update()
@@ -73,9 +75,9 @@ public class GameManagerScript : MonoBehaviour
     public bool FindBall()
     {
         //procurando se alguém tem a bola
-        for (int i = 0; i < imWithBall.Count; i++)
+        for (int i = 0; i < teamA.Count; i++)
         {
-            if (imWithBall[i])
+            if (teamA[i].withBall)
             {
                 return true;
             }
@@ -84,16 +86,30 @@ public class GameManagerScript : MonoBehaviour
     }
 
     //NOVO
-    public Transform MenorDistancia(Transform playerPosition)
+    public Transform MenorDistancia(Transform playerPosition, bool tocarPraTras)
     {
         mPosition = null;
         mDistance = 99999f;
 
         for (int i = 0; i < teamA.Count; i++)
         {
-            if (!imWithBall[i])
+            if (!teamA[i].withBall)
             {
-                if (teamA[i].transform.position.x >= playerPosition.position.x) // so pode passar para frente
+                if (!tocarPraTras)
+                {
+                    if (teamA[i].transform.position.x >= playerPosition.position.x) // so pode passar para frente
+                    {
+                        distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
+
+                        if (distance < mDistance)
+                        {
+                            Debug.Log(teamA[i].transform.position);
+                            mDistance = distance;
+                            mPosition = teamA[i].transform;
+                        }
+                    }
+                }
+                else
                 {
                     distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
 
@@ -108,17 +124,6 @@ public class GameManagerScript : MonoBehaviour
         }
 
         return mPosition;
-    }
-
-    public void AdicionarNaListaBool(GameObject player, bool withBall)
-    {
-        for (int i = 0; i < teamA.Count; i++)
-        {
-            if (teamA[i] == player)
-            {
-                imWithBall[i] = withBall;
-            }
-        }
     }
 
     //essa func deixa nossas tiles do grid transparentes pra o campo ser exibido em foco principal

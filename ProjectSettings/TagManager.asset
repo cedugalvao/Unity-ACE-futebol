@@ -8,6 +8,8 @@ TagManager:
   - gamemanager
   - tile
   - ball
+  - golA
+  - golB
   layers:
   - Default
   - TransparentFX
