@@ -54,12 +54,10 @@ public class PlayerA : MonoBehaviour
     // Funcao para destruir o game object do player e removê-lo do campo
     private void DestroyPlayer()
     {
-        gameManager.imWithBall.Remove(withBall); //parametro refere-se a true ou false, se ele esta ou não com a bola
-
         this.withBall = false; // ninguém está com a bola
         this.myBall.transform.SetParent(null); // ela vira órfã
 
-        gameManager.teamA.Remove(gameObject);
+        gameManager.teamA.Remove(this);
         Destroy(gameObject);
         gridManager.ToggleVacantTile(transform.position);
     }
@@ -68,9 +66,7 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            gameManager.AdicionarNaListaBool(gameObject, true);
             withBall = true;
-            //chute = false;
 
             // player A, como ataca pra direita, a bola vai estar mais a direita do player
             myBall.transform.position = new Vector3(this.transform.position.x + 0.6f, this.transform.position.y, this.transform.position.z);
@@ -80,7 +76,6 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            gameManager.AdicionarNaListaBool(gameObject, false);
             withBall = false;
         }
     }

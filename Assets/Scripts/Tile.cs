@@ -57,16 +57,8 @@ public class Tile : MonoBehaviour
                 // Instanciando o jogador novo na posição da tile escolhida
                 newPlayerA = Instantiate(_playerA, transform.position, _playerA.transform.rotation);
                 gridManager.ToggleVacantTile(transform.position); // Mudando a tile para ocupada
-                gameManager.teamA.Add(newPlayerA); // Adicionando o novo player na lista
 
-                if (newPlayerA.transform.childCount > 1)
-                {
-                    gameManager.imWithBall.Add(true);
-                }
-                else
-                {
-                    gameManager.imWithBall.Add(false);
-                }
+                gameManager.teamA.Add(newPlayerA.GetComponent<PlayerA>()); // Adicionando o novo player na lista
             }
         }
 
