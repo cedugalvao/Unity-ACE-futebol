@@ -17,7 +17,7 @@ public class GameManagerScript : MonoBehaviour
     private Transform mPosition;
 
     public List<PlayerA> teamA = new List<PlayerA>(); // Lista com os jogadores do time A
-    public List<GameObject> teamB = new List<GameObject>(); // Lista com os jogadores do time B
+    public List<PlayerB> teamB = new List<PlayerB>(); // Lista com os jogadores do time B
 
     [SerializeField]
     public Transform GolA;
@@ -32,7 +32,7 @@ public class GameManagerScript : MonoBehaviour
     void Update()
     {
         // se o time A estiver todo em campo, e o espaço houver sido apertado
-        if (Input.GetKeyDown(KeyCode.Space) && teamA.Count >= maxPlayers)
+        if (Input.GetKeyDown(KeyCode.Space) && teamA.Count >= maxPlayers && teamB.Count >= maxPlayers)
         {
             matchon = true;
             Match();
@@ -75,9 +75,13 @@ public class GameManagerScript : MonoBehaviour
     public bool FindBall()
     {
         //procurando se alguém tem a bola
-        for (int i = 0; i < teamA.Count; i++)
+        for (int i = 0; i < maxPlayers; i++)
         {
-            if (teamA[i].withBall)
+            if (teamA[i].withBallA)
+            {
+                return true;
+            }
+            if (teamB[i].withBallB)
             {
                 return true;
             }
@@ -86,38 +90,72 @@ public class GameManagerScript : MonoBehaviour
     }
 
     //NOVO
-    public Transform MenorDistancia(Transform playerPosition, bool tocarPraTras)
+    public Transform MenorDistancia(Transform playerPosition, bool tocarPraTras, char time)
     {
         mPosition = null;
         mDistance = 99999f;
 
-        for (int i = 0; i < teamA.Count; i++)
+        for (int i = 0; i < maxPlayers; i++) // Ainda não tem expulsão no jogo, se tiver, mudar para team.Count
         {
-            if (!teamA[i].withBall)
+            if (time == 'A')
             {
-                if (!tocarPraTras)
+                if (!teamA[i].withBallA)
                 {
-                    if (teamA[i].transform.position.x >= playerPosition.position.x) // so pode passar para frente
+                    if (!tocarPraTras)
+                    {
+                        if (teamA[i].transform.position.x >= playerPosition.position.x) // so pode passar para frente
+                        {
+                            distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
+
+                            if (distance < mDistance)
+                            {
+                                //Debug.Log(teamA[i].transform.position);
+                                mDistance = distance;
+                                mPosition = teamA[i].transform;
+                            }
+                        }
+                    }
+                    else
                     {
                         distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
 
                         if (distance < mDistance)
                         {
-                            Debug.Log(teamA[i].transform.position);
+                            //Debug.Log(teamA[i].transform.position);
                             mDistance = distance;
                             mPosition = teamA[i].transform;
                         }
                     }
                 }
-                else
+            }
+            else if (time == 'B')
+            {
+                if (!teamB[i].withBallB)
                 {
-                    distance = Vector3.Distance(playerPosition.position, teamA[i].transform.position);
-
-                    if (distance < mDistance)
+                    if (!tocarPraTras)
                     {
-                        Debug.Log(teamA[i].transform.position);
-                        mDistance = distance;
-                        mPosition = teamA[i].transform;
+                        if (teamB[i].transform.position.x <= playerPosition.position.x) // so pode passar para frente
+                        {
+                            distance = Vector3.Distance(playerPosition.position, teamB[i].transform.position);
+
+                            if (distance < mDistance)
+                            {
+                                //Debug.Log(teamB[i].transform.position);
+                                mDistance = distance;
+                                mPosition = teamB[i].transform;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        distance = Vector3.Distance(playerPosition.position, teamB[i].transform.position);
+
+                        if (distance < mDistance)
+                        {
+                            //Debug.Log(teamB[i].transform.position);
+                            mDistance = distance;
+                            mPosition = teamB[i].transform;
+                        }
                     }
                 }
             }

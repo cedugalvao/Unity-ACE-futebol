@@ -7,7 +7,7 @@ public class PlayerA : MonoBehaviour
 {
     public GameManagerScript gameManager;  //Acesso ao gamemanager e grid manager para fazer uso de métodos
     public GridManagerScript gridManager;  //E variáveis dessas classes
-    public bool withBall = false;
+    public bool withBallA = false;
     private bool chute = false;
     
     [SerializeField]
@@ -29,7 +29,7 @@ public class PlayerA : MonoBehaviour
     {
         //Como os jogadores são separados, essa checagem era feito em todas, e como só um possuía a bola
         //no else, acabava sempre SetParent(null) quando tinha mais de um jogadpr em cena
-        if (withBall) // Se estiver com a bola...
+        if (withBallA) // Se estiver com a bola...
         {
             myBall.transform.SetParent(this.transform); // a bola se torna o filho do jogador
         }
@@ -54,7 +54,7 @@ public class PlayerA : MonoBehaviour
     // Funcao para destruir o game object do player e removê-lo do campo
     private void DestroyPlayer()
     {
-        this.withBall = false; // ninguém está com a bola
+        this.withBallA = false; // ninguém está com a bola
         this.myBall.transform.SetParent(null); // ela vira órfã
 
         gameManager.teamA.Remove(this);
@@ -66,7 +66,7 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            withBall = true;
+            withBallA = true;
 
             // player A, como ataca pra direita, a bola vai estar mais a direita do player
             myBall.transform.position = new Vector3(this.transform.position.x + 0.6f, this.transform.position.y, this.transform.position.z);
@@ -76,7 +76,7 @@ public class PlayerA : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ball"))
         {
-            withBall = false;
+            withBallA = false;
         }
     }
 }

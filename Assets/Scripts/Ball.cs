@@ -13,6 +13,7 @@ public class Ball : MonoBehaviour
     private Transform playerClosest;
 
     private GameObject jogadorComABola;
+    private char time = 'N';
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +26,14 @@ public class Ball : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.J) && !chute && gameManager.matchon && !gol) // ...e apertar j 
         {
             chute = true;
-            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false);
+            if (time == 'A')
+            {
+                playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, A);
+            }
+            else if (time == 'B')
+            {
+                playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, B);
+            }
         }
 
         if (playerClosest != null) // existe o player
@@ -45,13 +53,37 @@ public class Ball : MonoBehaviour
         {
             if (chute)
             {
-                // tocar pro gol
-                if (jogadorComABola.GetComponent<PlayerA>() != null) // esse jogador e do TimeA
+                if (time == 'A')
                 {
-                    float distance = Vector3.Distance(this.transform.position, gameManager.GolB.position);
+                    jogadorComABola.GetComponent<PlayerA>();
+                }
+                else if (time == 'B')
+                {
+                    jogadorComABola.GetComponent<PlayerB>();
+                }
+                // tocar pro gol
+                if (jogadorComABola != null)
+                {
+                    if (time == 'A')
+                    {
+                        float distance = Vector3.Distance(this.transform.position, gameManager.GolB.position);
+                    }
+                    else if (time == 'B')
+                    {
+                        float distance = Vector3.Distance(this.transform.position, gameManager.GolA.position);
+                    }
+                    
                     if (distance > forceKick)
                     {
-                        playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true);
+
+                        if (time == 'A')
+                        {
+                            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, A);
+                        }
+                        else if (time == 'B')
+                        {
+                            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, B);
+                        }
 
                         float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
 
@@ -69,15 +101,21 @@ public class Ball : MonoBehaviour
                     }
                     else
                     {
-                        // pra fazer o gol vai ser o golB
-                        this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolB.position, 10 * Time.deltaTime);
+                        if (time == 'A')
+                        {
+                            this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolB.position, 10 * Time.deltaTime);
+                        }
+                        else if (time == 'B')
+                        {
+                            this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolA.position, 10 * Time.deltaTime);
+                        }
                     }
 
                 }
-                else // TeamB
+                /*else // TeamB
                 {
                     this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolA.position, 10 * Time.deltaTime);
-                }
+                }*/
             }
         }
     }
@@ -85,19 +123,30 @@ public class Ball : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         // mudar para adicionar para colidir com player (seria pegar o prefab do player e adicionar tag nele)
-        if (other.collider.CompareTag("Player"))
+        if (other.collider.CompareTag("PlayerA"))
         {
             jogadorComABola = other.gameObject;
+            time = 'A';
             chute = false;
+        }
+        else if (other.collider.CompareTag("PlayerB"))
+        {
+           jogadorComABola = other.gameObject;
+            time = 'B';
+            chute = false; 
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Player") && jogadorComABola.transform.rotation.z != 0) // se era o player e o player tinha rotacionado
+        if (other.collider.CompareTag("PlayerA") && jogadorComABola.transform.rotation.z != 0) // se era o player e o player tinha rotacionado
         {
             // voltar a rotacao
             StartCoroutine(EsperarSairDaCaixaColisao(other.transform));
+        }
+        else if (other.collider.CompareTag("PlayerB") && jogadorComABola.transform.rotation.z != 0)
+        {
+            StartCoroutine(EsperarSairDaCaixaColisao(other.transform));  
         }
     }
 
