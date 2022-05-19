@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    public bool chute = false;
-    public bool gol = false;
+    private bool chute = false;
+    private bool gol = false;
+    private bool rotacionou = false;
+    private float distance;
 
     private float forceKick = 6.0f;
 
     public GameManagerScript gameManager;
-    private Transform playerClosest;
 
+    private Transform playerClosest;
     private GameObject jogadorComABola;
+
     private char time = 'N';
 
     // Start is called before the first frame update
@@ -25,97 +28,87 @@ public class Ball : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.J) && !chute && gameManager.matchon && !gol) // ...e apertar j 
         {
+            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, time);
             chute = true;
-            if (time == 'A')
-            {
-                playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, A);
-            }
-            else if (time == 'B')
-            {
-                playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, B);
-            }
         }
 
+        if (chute)
+        {
+            this.Chutar();
+        }
+    }
+
+    private void Chutar()
+    {
         if (playerClosest != null) // existe o player
         {
             // 1 que e uma margem para pegar o player do lado
-            if (chute)
-            {
-                float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
+            float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
 
-                if (distanciaProMaisProximo <= forceKick)
-                {
-                    this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
-                }
+            if (distanciaProMaisProximo <= forceKick)
+            {
+                this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
             }
         }
         else // nao tem "opcoes"
         {
-            if (chute)
+            // tocar pro gol
+            if (jogadorComABola.GetComponent<PlayerA>() != null) // teamA
             {
-                if (time == 'A')
-                {
-                    jogadorComABola.GetComponent<PlayerA>();
-                }
-                else if (time == 'B')
-                {
-                    jogadorComABola.GetComponent<PlayerB>();
-                }
-                // tocar pro gol
-                if (jogadorComABola != null)
-                {
-                    if (time == 'A')
-                    {
-                        float distance = Vector3.Distance(this.transform.position, gameManager.GolB.position);
-                    }
-                    else if (time == 'B')
-                    {
-                        float distance = Vector3.Distance(this.transform.position, gameManager.GolA.position);
-                    }
-                    
-                    if (distance > forceKick)
-                    {
+                distance = Vector3.Distance(this.transform.position, gameManager.GolB.position);
 
-                        if (time == 'A')
-                        {
-                            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, A);
-                        }
-                        else if (time == 'B')
-                        {
-                            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, B);
-                        }
+                if (distance > forceKick)
+                {
+                    playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, time);
 
-                        float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
+                    float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
 
-                        if (distanciaProMaisProximo <= forceKick)
-                        {
-                            // ROTACAO
-                            // pode fazer uma animacao rotacionando um pouco na update
-                            jogadorComABola.transform.Rotate(new Vector3(0, 0, 180));
-                            this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
-                        }
-                        else
-                        {
-                            // NAO CHUTA
-                        }
+                    if (distanciaProMaisProximo <= forceKick)
+                    {
+                        // ROTACAO
+                        // pode fazer uma animacao rotacionando um pouco na update
+                        jogadorComABola.transform.Rotate(new Vector3(0, 0, 180));
+                        this.rotacionou = true;
+                        this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
                     }
                     else
                     {
-                        if (time == 'A')
-                        {
-                            this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolB.position, 10 * Time.deltaTime);
-                        }
-                        else if (time == 'B')
-                        {
-                            this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolA.position, 10 * Time.deltaTime);
-                        }
+                        // NAO CHUTA
                     }
-
                 }
-                /*else // TeamB
+                else // chuta pro gol
+                {
+                    this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolB.position, 10 * Time.deltaTime);
+                }
+
+            }
+            else if (jogadorComABola.GetComponent<PlayerB>() != null) // TeamB
+            {
+                distance = Vector3.Distance(this.transform.position, gameManager.GolA.position);
+
+                if (distance > forceKick)
+                {
+                    playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, true, time);
+
+                    float distanciaProMaisProximo = Vector3.Distance(jogadorComABola.transform.position, playerClosest.position);
+
+                    if (distanciaProMaisProximo <= forceKick)
+                    {
+                        // ROTACAO
+                        // pode fazer uma animacao rotacionando um pouco na update
+                        jogadorComABola.transform.Rotate(new Vector3(0, 0, 180));
+                        this.rotacionou = true;
+                        this.transform.position = Vector2.MoveTowards(this.transform.position, playerClosest.position, 10 * Time.deltaTime);
+                    }
+                    else
+                    {
+                        // NAO CHUTA
+                    }
+                }
+                else // chuta pro gol
                 {
                     this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolA.position, 10 * Time.deltaTime);
-                }*/
+                }
             }
         }
     }
@@ -131,7 +124,7 @@ public class Ball : MonoBehaviour
         }
         else if (other.collider.CompareTag("PlayerB"))
         {
-           jogadorComABola = other.gameObject;
+            jogadorComABola = other.gameObject;
             time = 'B';
             chute = false; 
         }
@@ -139,14 +132,18 @@ public class Ball : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.collider.CompareTag("PlayerA") && jogadorComABola.transform.rotation.z != 0) // se era o player e o player tinha rotacionado
+        if (this.rotacionou)
         {
-            // voltar a rotacao
-            StartCoroutine(EsperarSairDaCaixaColisao(other.transform));
-        }
-        else if (other.collider.CompareTag("PlayerB") && jogadorComABola.transform.rotation.z != 0)
-        {
-            StartCoroutine(EsperarSairDaCaixaColisao(other.transform));  
+            if (other.collider.CompareTag("PlayerA")) // se era o player e o player tinha rotacionado
+            {
+                // voltar a rotacao
+                StartCoroutine(EsperarSairDaCaixaColisao(other.transform));
+            }
+            else if (other.collider.CompareTag("PlayerB"))
+            {
+                StartCoroutine(EsperarSairDaCaixaColisao(other.transform));
+            }
+            this.rotacionou = false;
         }
     }
 

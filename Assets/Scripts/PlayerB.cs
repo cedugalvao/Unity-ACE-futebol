@@ -8,7 +8,7 @@ public class PlayerB : MonoBehaviour
     public GameManagerScript gameManager;  //Acesso ao gamemanager e grid manager para fazer uso de métodos
     public GridManagerScript gridManager;  //E variáveis dessas classes
     
-    public bool withballB = false;
+    public bool withBallB = false;
     private bool chute = false;
     
     [SerializeField]
@@ -26,7 +26,7 @@ public class PlayerB : MonoBehaviour
     {
         //Como os jogadores são separados, essa checagem era feito em todas, e como só um possuía a bola
         //no else, acabava sempre SetParent(null) quando tinha mais de um jogadpr em cena
-        if (withBallB) // Se estiver com a bola...
+        if (withBallB && gameManager.matchon) // Se estiver com a bola...
         {
             myBall.transform.SetParent(this.transform); // a bola se torna o filho do jogador
         }

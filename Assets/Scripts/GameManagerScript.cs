@@ -24,9 +24,17 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField]
     public Transform GolB;
 
+    private Ball ball;
+
+    private bool chute = false;
+
     public SpriteRenderer _nrenderer;           // componente reder que será usado adiante pra modificar
                                                 // a cor das tiles
 
+    private void Start()
+    {
+        ball = GameObject.FindObjectOfType<Ball>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -39,7 +47,17 @@ public class GameManagerScript : MonoBehaviour
             // Debug.Log("Match started"); // debug message
         }
 
-        
+        /*
+        if (Input.GetKeyDown(KeyCode.J) && !chute && matchon && !ball.gol) // ...e apertar j 
+        {
+            playerClosest = gameManager.MenorDistancia(jogadorComABola.transform, false, time);
+            chute = true;
+        }
+
+        if (chute)
+        {
+            this.Chutar();
+        }*/
     }
 
     //func responsável pela partida, gestão de turnos e execução da IA 
@@ -75,17 +93,23 @@ public class GameManagerScript : MonoBehaviour
     public bool FindBall()
     {
         //procurando se alguém tem a bola
-        for (int i = 0; i < maxPlayers; i++)
+        for (int i = 0; i < teamA.Count; i++)
         {
             if (teamA[i].withBallA)
             {
                 return true;
             }
+            
+        }
+
+        for (int i = 0; i < teamB.Count; i++)
+        {
             if (teamB[i].withBallB)
             {
                 return true;
             }
-        } 
+        }
+
         return false;
     }
 
