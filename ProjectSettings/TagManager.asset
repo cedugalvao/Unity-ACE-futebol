@@ -10,6 +10,9 @@ TagManager:
   - ball
   - golA
   - golB
+  - PlayerB
+  - Playerb
+  - PlayerA
   layers:
   - Default
   - TransparentFX
