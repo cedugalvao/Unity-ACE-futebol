@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Ball : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class Ball : MonoBehaviour
     private bool gol = false;
     private bool rotacionou = false;
     private float distance;
-
+    
     private float forceKick = 6.0f;
 
     public GameManagerScript gameManager;
@@ -18,10 +19,22 @@ public class Ball : MonoBehaviour
 
     private char time = 'N';
 
+    public Text ScoreA;
+    private int ScoreNA;
+    public Text ScoreB;
+    private int ScoreNB;
+
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.FindGameObjectWithTag("gamemanager").GetComponent<GameManagerScript>();
+
+        ScoreNA = 0;
+        ScoreA.text = "" + ScoreNA; 
+        ScoreNB = 0;
+        ScoreB.text = "" + ScoreNB; 
+        
+       
     }
 
     private void Update()
@@ -79,6 +92,8 @@ public class Ball : MonoBehaviour
                 else // chuta pro gol
                 {
                     this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolB.position, 10 * Time.deltaTime);
+                    ScoreNA += 1;
+                    ScoreA.text = "" + ScoreNA;  
                 }
 
             }
@@ -108,6 +123,8 @@ public class Ball : MonoBehaviour
                 else // chuta pro gol
                 {
                     this.transform.position = Vector2.MoveTowards(this.transform.position, gameManager.GolA.position, 10 * Time.deltaTime);
+                    ScoreNB += 1;
+                    ScoreB.text = "" + ScoreNB;
                 }
             }
         }
